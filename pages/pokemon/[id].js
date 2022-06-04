@@ -4,7 +4,20 @@ import Head from "next/head";
 import Link from "next/link";
 import styles from "../../styles/Details.module.css";
 
-export async function getServerSideProps({ params }) {
+export async function getStaticPaths() {
+  const res = await fetch(
+    "https://jherr-pokemon.s3.us-west-1.amazonaws.com/index.json"
+  );
+  const pokemons = await res.json();
+  return {
+    paths: pokemons.map((pokemon) => ({
+      params: { id: pokemon.id.toString() },
+    })),
+    fallback: false,
+  };
+}
+
+export async function getStaticProps({ params }) {
   const res = await fetch(
     `https://jherr-pokemon.s3.us-west-1.amazonaws.com/pokemon/${params.id}.json`
   );
