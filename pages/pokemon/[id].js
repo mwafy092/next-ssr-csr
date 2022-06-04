@@ -1,27 +1,25 @@
 /* eslint-disable @next/next/no-img-element */
 import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
 import Head from "next/head";
 import Link from "next/link";
 import styles from "../../styles/Details.module.css";
 
-const Details = () => {
-  const [pokemon, setPokemon] = useState(null);
+export async function getServerSideProps({ params }) {
+  const res = await fetch(
+    `https://jherr-pokemon.s3.us-west-1.amazonaws.com/pokemon/${params.id}.json`
+  );
+  return {
+    props: {
+      pokemon: await res.json(),
+    },
+  };
+}
+
+const Details = ({ pokemon }) => {
   const {
     query: { id },
   } = useRouter();
 
-  useEffect(() => {
-    const getPokemon = async () => {
-      const res = await fetch(
-        `https://jherr-pokemon.s3.us-west-1.amazonaws.com/pokemon/${id}.json`
-      );
-      setPokemon(await res.json());
-    };
-    if (id) {
-      getPokemon();
-    }
-  }, [id]);
   const imgURL = "https://jherr-pokemon.s3.us-west-1.amazonaws.com/";
   if (!pokemon) {
     return null;
